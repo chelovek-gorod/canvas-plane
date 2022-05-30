@@ -66,7 +66,7 @@ const minSpeed = 5;
 const cruisingSpeed = 3;
 const maxSpeed = 1;
 
-const turnSpeed = 0.0003;
+const turnSpeed = 0.01;
 let turnK = -1;
 const accSpeed = 0.01;
 
