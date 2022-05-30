@@ -8,6 +8,7 @@ const tiles = new Image();
 tiles.src = './src/images/tile920_2x2.jpg';
 tiles.size = 920;
 
+/*
 const map = [
     //   fields        lake        mountains    
     [{x: 1, y: 1}, {x: 1, y: 0}, {x: 0, y: 0}],
@@ -15,6 +16,15 @@ const map = [
     [{x: 1, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}],
     // mountains       fields        lake
     [{x: 0, y: 0}, {x: 1, y: 1}, {x: 1, y: 0}]
+];
+*/
+const map = [
+    //   fields        lake        mountains    
+    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
+    //   lake           City        fields
+    [{x: 0, y: 0}, {x: 0, y: 1}, {x: 0, y: 0}],
+    // mountains       fields        lake
+    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}]
 ];
 map.forEach(e => e.forEach(c => {
     c.x *= tiles.size;
@@ -60,7 +70,7 @@ let planeMapX = mapSize / 2;
 let planeMapY = mapSize / 2;
 
 let speed = 1;
-let angle = 0;
+let direction = 90;
 
 const minSpeed = 5;
 const cruisingSpeed = 3;
@@ -76,7 +86,13 @@ let accelerationIs = false;
 let slowdownIs = false;
 
 function planeMove() {
-    planeMapY -= speed;
+    let RAD = Math.PI / 180;
+    let angle = RAD * direction;
+    planeMapX += Math.cos(angle) * speed;
+    planeMapY += Math.sin(angle) * speed;
+
+    if (planeMapX < 0) planeMapX += mapSize;
+    if (planeMapX >= mapSize) planeMapX = planeMapX - mapSize;
     if (planeMapY < 0) planeMapY += mapSize;
     if (planeMapY >= mapSize) planeMapY = planeMapY - mapSize;
 }
@@ -134,7 +150,7 @@ function drawGround() {
 
     ctx.save();
     ctx.translate(VIEW_CX, VIEW_CY);
-    ctx.rotate(Math.PI / 180 * angle);
+    ctx.rotate(Math.PI / 180 * direction);
     ctx.translate(-VIEW_CX, -VIEW_CY);
 
     let startPointX = drawPointX; // px
@@ -157,7 +173,7 @@ function drawGround() {
     ctx.restore();
 
     if (frameY != 0) {
-        angle += turnSpeed * frameX * turnK;
+        direction += turnSpeed * frameX * turnK;
     }
 
 }
@@ -219,38 +235,3 @@ function animate() { // console.log('frame =', frame);
     window.requestAnimationFrame(animate);
 }
 animate();
-
-/*
-function drawGround() {
-
-    // find map tile and tile position
-    let tilePositionX = planeMapX % mapSize;
-    let tileX = 1 - ((planeMapX - tilePositionX) % mapSize);
-
-    let tilePositionY = planeMapY % mapSize;
-    let tileY = 1 - ((planeMapY - tilePositionY) % mapSize);
-
-    let drawPointX = 0 - tiles.size;
-    let drawPointY = 0 - tiles.size;
-
-    ctx.save();
-    ctx.translate(planeViewX, planeViewY);
-    ctx.rotate(angle);
-    ctx.translate(-planeViewX, -planeViewY);
-
-    while (drawPointY < C_HEIGHT + tiles.size) {
-        while (drawPointX < C_WIDTH + tiles.size) {
-            ctx.drawImage(tiles, 0, 0, tiles.size, tiles.size, drawPointX, drawPointY, tiles.size, tiles.size);
-            drawPointX += tiles.size;
-        }
-        drawPointX = 0;
-        drawPointY += tiles.size;
-    }
-
-    ctx.restore();
-    if (frameY != 0) {
-        angle += turnSpeed * frameX * turnK;
-    }
-
-}
-*/
