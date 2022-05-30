@@ -59,7 +59,7 @@ let flyIs = false;
 let planeMapX = mapSize / 2;
 let planeMapY = mapSize / 2;
 
-let speed = 3;
+let speed = 1;
 let angle = 0;
 
 const minSpeed = 5;
@@ -134,7 +134,7 @@ function drawGround() {
 
     ctx.save();
     ctx.translate(VIEW_CX, VIEW_CY);
-    ctx.rotate(angle);
+    ctx.rotate(Math.PI / 180 * angle);
     ctx.translate(-VIEW_CX, -VIEW_CY);
 
     let startPointX = drawPointX; // px
