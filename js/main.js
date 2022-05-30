@@ -24,7 +24,7 @@ map.forEach(e => e.forEach(c => {
 const mapSize = tiles.size * map.length;
 
 let C_WIDTH, C_HEIGHT, VIEW_CX, VIEW_CY, VIEW_RADIUS;
-let tilesInRadius, tilesInView;
+let tilesInRadius, tilesInViewLine;
 
 const resize = () => {
     C_WIDTH = CANVAS.width = window.innerWidth;
@@ -78,6 +78,7 @@ let slowdownIs = false;
 function planeMove() {
     planeMapY -= speed;
     if (planeMapY < 0) planeMapY += mapSize;
+    if (planeMapY >= mapSize) planeMapY = planeMapY - mapSize;
 }
 
 document.addEventListener('keydown', (event) => {
@@ -118,36 +119,39 @@ function drawGround() {
     // map.length, mapSize, tiles.size, planeMapX, planeMapY
     // C_WIDTH, C_HEIGHT, VIEW_CX, VIEW_CY, VIEW_RADIUS, tilesInRadius, tilesInViewLine
 
-    let tilePositionX = planeMapX % mapSize;
-    let tileX = (planeMapX - tilePositionX) / mapSize;
+    let tilePositionX = planeMapX % tiles.size; // px
+    let tileX = Math.floor(planeMapX / tiles.size); // tiles
 
-    let tilePositionY = planeMapY % mapSize;
-    let tileY = (planeMapY - tilePositionY) / mapSize;
+    let tilePositionY = planeMapY % tiles.size; // px
+    let tileY = Math.floor(planeMapY / tiles.size); // tiles
 
-    let drawPointX = planeViewX - tiles.size * tilesInViewRadius;
-    let drawPointY = planeViewY - tiles.size * tilesInViewRadius;
+    let mapTileX = (tilesInViewLine + tileX) % map.length; // tiles
+    let mapTileY = (tilesInViewLine + tileY) % map.length; // tiles
 
-    let mapTileX = (tileX + tilesInViewRadius) % map.length;
-    let mapTileY = (tileY + tilesInViewRadius) % map.length;
+    // get first points to draw map
+    let drawPointX = VIEW_CX - (tilesInRadius * tiles.size + tilePositionX); // px
+    let drawPointY = VIEW_CY - (tilesInRadius * tiles.size + tilePositionY); // px
 
     ctx.save();
-    ctx.translate(planeViewX, planeViewY);
+    ctx.translate(VIEW_CX, VIEW_CY);
     ctx.rotate(angle);
-    ctx.translate(-planeViewX, -planeViewY);
+    ctx.translate(-VIEW_CX, -VIEW_CY);
 
-    for (let yy = 0; yy < tilesInViewSize; yy++) {
-        for (let xx = 0; xx < tilesInViewSize; xx++) {
+    let startPointX = drawPointX; // px
+    for (let yy = 0; yy < tilesInViewLine; yy++) {
+        for (let xx = 0; xx < tilesInViewLine; xx++) {
+            // console.log('mapTileX =', mapTileX, '; mapTileY =', mapTileY, '; (tileY =', tileY, ')');
             ctx.drawImage(
                 tiles, map[mapTileY][mapTileX].x, map[mapTileY][mapTileX].y,
                 tiles.size, tiles.size, drawPointX, drawPointY, tiles.size, tiles.size);
             drawPointX += tiles.size;
-
-            mapTileX = (mapTileX + 1) % map.length;
+            mapTileX++;
+            if (mapTileX >= map.length) mapTileX = 0;
         }
-        drawPointX = planeViewX - tiles.size * tilesInViewRadius;
+        drawPointX = startPointX;
         drawPointY += tiles.size;
-
-        mapTileY = (mapTileY + 1) % map.length;
+        mapTileY++;
+        if (mapTileY >= map.length) mapTileY = 0;
     }
 
     ctx.restore();
@@ -165,7 +169,7 @@ function drawGround() {
 let lastAnimateTimestamp = Date.now();
 let frame = 0;
 
-function animate() {
+function animate() { // console.log('frame =', frame);
 
     // COUNT DELTA TIME
     let timeStamp = Date.now();
@@ -179,7 +183,7 @@ function animate() {
     
     ctx.drawImage(planeImage,
         frameX * frameSize, frameY * frameSize, frameSize, frameSize,
-        planeViewX - frameHalfSize, planeViewY - frameHalfSize, frameSize, frameSize);
+        VIEW_CX - frameHalfSize, VIEW_CY - frameHalfSize, frameSize, frameSize);
 
     planeMove();
 
@@ -203,9 +207,12 @@ function animate() {
         }
     }
 
-    if (!flyIs && frame % frameX === 0) {
+    if (!flyIs && frame % 2 === 0) {
         frameX--;
-        if (frameX == 0) fly = true;
+        if (frameX == 0) flyIs = true;
+
+        // console.log('tilesInViewLine', tilesInViewLine);
+        // console.log('VIEW_RADIUS', VIEW_RADIUS);
     }
 
     frame++;
