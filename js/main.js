@@ -70,7 +70,10 @@ let planeMapX = mapSize / 2;
 let planeMapY = mapSize / 2;
 
 let speed = 1;
-let direction = 90;
+let direction = 0;
+
+const RAD = Math.PI / 180;
+const getAngle = () => RAD * direction;
 
 const minSpeed = 5;
 const cruisingSpeed = 3;
@@ -86,8 +89,8 @@ let accelerationIs = false;
 let slowdownIs = false;
 
 function planeMove() {
-    let RAD = Math.PI / 180;
-    let angle = RAD * direction;
+    /*
+    let angle = getAngle();
     planeMapX += Math.cos(angle) * speed;
     planeMapY += Math.sin(angle) * speed;
 
@@ -95,6 +98,7 @@ function planeMove() {
     if (planeMapX >= mapSize) planeMapX = planeMapX - mapSize;
     if (planeMapY < 0) planeMapY += mapSize;
     if (planeMapY >= mapSize) planeMapY = planeMapY - mapSize;
+    */
 }
 
 document.addEventListener('keydown', (event) => {
@@ -150,7 +154,7 @@ function drawGround() {
 
     ctx.save();
     ctx.translate(VIEW_CX, VIEW_CY);
-    ctx.rotate(Math.PI / 180 * direction);
+    ctx.rotate( getAngle() );
     ctx.translate(-VIEW_CX, -VIEW_CY);
 
     let startPointX = drawPointX; // px
