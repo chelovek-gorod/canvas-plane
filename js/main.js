@@ -33,9 +33,9 @@ const resize = () => {
     VIEW_CY = (C_HEIGHT / 3) * 2;
     VIEW_RADIUS = Math.ceil(Math.sqrt((VIEW_CX ** 2) + (VIEW_CY ** 2)));
     tilesInRadius = Math.ceil(VIEW_RADIUS / tiles.size);
-    tilesInView = tilesInRadius * 2;
-}
-  
+    tilesInViewLine = 1 + (tilesInRadius * 2);
+} 
+
 resize()
 window.addEventListener('resize', resize)
 
@@ -115,7 +115,9 @@ document.addEventListener('keyup', (event) => {
 
 function drawGround() {
 
-    // find map tile and tile position
+    // map.length, mapSize, tiles.size, planeMapX, planeMapY
+    // C_WIDTH, C_HEIGHT, VIEW_CX, VIEW_CY, VIEW_RADIUS, tilesInRadius, tilesInViewLine
+
     let tilePositionX = planeMapX % mapSize;
     let tileX = (planeMapX - tilePositionX) / mapSize;
 
