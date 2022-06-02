@@ -20,11 +20,11 @@ const map = [
 */
 const map = [
     //   fields        lake        mountains    
-    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
+    [{x: 0, y: 0}, {x: 0, y: 1}, {x: 0, y: 0}],
     //   lake           City        fields
     [{x: 1, y: 1}, {x: 0, y: 1}, {x: 1, y: 0}],
     // mountains       fields        lake
-    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}]
+    [{x: 1, y: 1}, {x: 0, y: 0}, {x: 1, y: 0}]
 ];
 map.forEach(e => e.forEach(c => {
     c.x *= tiles.size;
@@ -44,6 +44,12 @@ const resize = () => {
     VIEW_RADIUS = Math.ceil(Math.sqrt((VIEW_CX ** 2) + (VIEW_CY ** 2)));
     tilesInRadius = Math.ceil(VIEW_RADIUS / tiles.size);
     tilesInViewLine = 1 + (tilesInRadius * 2);
+
+    console.log('C_WIDTH =', C_WIDTH, '; C_HEIGHT =', C_HEIGHT);
+    console.log('VIEW_CX =', VIEW_CX, '; VIEW_CY =', VIEW_CY);
+    console.log('VIEW_RADIUS =', VIEW_RADIUS);
+    console.log('tilesInRadius =', tilesInRadius);
+    console.log('tilesInViewLine =', tilesInViewLine);
 } 
 
 resize()
