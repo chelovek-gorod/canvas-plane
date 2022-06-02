@@ -22,7 +22,7 @@ const map = [
     //   fields        lake        mountains    
     [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
     //   lake           City        fields
-    [{x: 0, y: 0}, {x: 0, y: 1}, {x: 0, y: 0}],
+    [{x: 1, y: 1}, {x: 0, y: 1}, {x: 1, y: 0}],
     // mountains       fields        lake
     [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}]
 ];
@@ -69,7 +69,7 @@ let flyIs = false;
 let planeMapX = mapSize / 2;
 let planeMapY = mapSize / 2;
 
-let speed = 1;
+let speed = 0;
 let direction = 0;
 
 const RAD = Math.PI / 180;
@@ -89,16 +89,21 @@ let accelerationIs = false;
 let slowdownIs = false;
 
 function planeMove() {
-    /*
+
+    if (accelerationIs != slowdownIs) {
+        if (accelerationIs) speed = 1;
+        else speed = -1;
+    } else speed = 0;
+    
     let angle = getAngle();
-    planeMapX += Math.cos(angle) * speed;
-    planeMapY += Math.sin(angle) * speed;
+    planeMapY += Math.cos(angle) * speed;
+    planeMapX += Math.sin(angle) * speed;
 
     if (planeMapX < 0) planeMapX += mapSize;
     if (planeMapX >= mapSize) planeMapX = planeMapX - mapSize;
     if (planeMapY < 0) planeMapY += mapSize;
     if (planeMapY >= mapSize) planeMapY = planeMapY - mapSize;
-    */
+    
 }
 
 document.addEventListener('keydown', (event) => {
@@ -126,8 +131,11 @@ document.addEventListener('keyup', (event) => {
         case 'ArrowRight' : toRightIs = false; break;
         case 'ArrowUp' : accelerationIs = false; break;
         case 'ArrowDown' : slowdownIs = false; break;
+
+        case 'NumpadAdd' : direction += 45; break;
+        case 'NumpadSubtract' : direction -= 45; break;
     }
-    //console.log('keypress', event.code);
+    console.log('keypress', event.code);
 });
 
 /*****************
@@ -148,9 +156,8 @@ function drawGround() {
     let mapTileX = (tilesInViewLine + tileX) % map.length; // tiles
     let mapTileY = (tilesInViewLine + tileY) % map.length; // tiles
 
-    // get first points to draw map
-    let drawPointX = VIEW_CX - (tilesInRadius * tiles.size + tilePositionX); // px
-    let drawPointY = VIEW_CY - (tilesInRadius * tiles.size + tilePositionY); // px
+    let drawPointX = VIEW_CX - (tilesInRadius * tiles.size - tilePositionX); // px
+    let drawPointY = VIEW_CY - (tilesInRadius * tiles.size - tilePositionY); // px
 
     ctx.save();
     ctx.translate(VIEW_CX, VIEW_CY);
@@ -234,6 +241,8 @@ function animate() { // console.log('frame =', frame);
         // console.log('tilesInViewLine', tilesInViewLine);
         // console.log('VIEW_RADIUS', VIEW_RADIUS);
     }
+
+    if (frame % 60 == 0) console.log('direction:', direction, '\nplaneMapX:', planeMapX, '\nplaneMapY:', planeMapY);
 
     frame++;
     window.requestAnimationFrame(animate);
